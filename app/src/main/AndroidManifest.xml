@@ -20,9 +20,7 @@
         <receiver android:name=".AppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="show.me.the.money.pricecomparison.android.appwidget.CLICK_1" />
-                <action android:name="show.me.the.money.pricecomparison.android.appwidget.CLICK_2" />
-                <action android:name="show.me.the.money.pricecomparison.android.appwidget.CLICK_3" />
+                <action android:name="show.me.the.money.pricecomparison.android.appwidget.COIN_BUTTON" />
             </intent-filter>
 
             <meta-data

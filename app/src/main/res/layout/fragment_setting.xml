@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="show.me.the.money.pricecomparison.MainActivity">
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <RadioButton
+            android:id="@+id/radio_bithumb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bithumb"
+            android:layout_marginBottom="20dp"/>
+
+        <RadioButton
+            android:id="@+id/radio_upbit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UpBit" />
+
+    </RadioGroup>
+
+
+</android.support.constraint.ConstraintLayout>
