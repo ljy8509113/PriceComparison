@@ -16,7 +16,22 @@ public class Common {
 
     public enum EXCHANGE {
         BITHUMB,
-        UPBIT
+        UPBIT,
+        COBIT;
+
+        public static EXCHANGE getExchange(String name){
+            if(name.equals(COBIT.name())){
+                return COBIT;
+            }else if(name.equals(UPBIT.name())){
+                return UPBIT;
+            }else{
+                return BITHUMB;
+            }
+        }
+
+
+
     }
 
+    public static final String EXCHANGE_KEY = "exchange";
 }

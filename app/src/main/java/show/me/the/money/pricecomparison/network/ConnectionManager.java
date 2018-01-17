@@ -1,5 +1,8 @@
 package show.me.the.money.pricecomparison.network;
 
+import show.me.the.money.pricecomparison.Common;
+import show.me.the.money.pricecomparison.listener.ConnectionListener;
+
 /**
  * Created by KOITT on 2018-01-16.
  */
@@ -7,16 +10,15 @@ package show.me.the.money.pricecomparison.network;
 public class ConnectionManager {
     static ConnectionManager instance = null;
 
-    public ConnectionManager Instance(){
+    public static ConnectionManager Instance(){
         if(instance == null)
             instance = new ConnectionManager();
-
         return instance;
     }
 
-    public void request(){
+    public void request(String url, String params, Common.EXCHANGE exchange, ConnectionListener listener, Common.HTTP_TYPE type){
         HttpConnection con = new HttpConnection();
-
+        con.request(url,params, type, exchange, listener);
     }
 
     public void response(){

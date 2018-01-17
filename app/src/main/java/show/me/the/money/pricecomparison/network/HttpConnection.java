@@ -10,6 +10,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import show.me.the.money.pricecomparison.Common;
 import show.me.the.money.pricecomparison.listener.ConnectionListener;
@@ -35,31 +38,39 @@ public class HttpConnection extends AsyncTask {
     }
 
     InputStream getRequestGET(String urlString, String params){
-        InputStream DataInputStream = null;
+        InputStream dataInputStream = null;
         try {
-            URL url = new URL(urlString);
-            HttpURLConnection cc = (HttpURLConnection) url.openConnection();
-            //set timeout for reading InputStream
-            cc.setReadTimeout(5000);
-            // set timeout for connection
-            cc.setConnectTimeout(5000);
-            //set HTTP method to GET
-            cc.setRequestMethod("GET");
-            //set it to true as we are connecting for input
-            cc.setDoInput(true);
 
-            //reading HTTP response code
-            int response = cc.getResponseCode();
+            String makeUrl = urlString + params;
+            URL url = new URL(makeUrl);
+            URLConnection urlConnection = url.openConnection();
+            urlConnection.setReadTimeout(5000);
+            urlConnection.setConnectTimeout(5000);
 
-            //if response code is 200 / OK then read Inputstream
-            if (response == HttpURLConnection.HTTP_OK) {
-                DataInputStream = cc.getInputStream();
-            }
+            dataInputStream = urlConnection.getInputStream();
+
+//            HttpsURLConnection cc = (HttpsURLConnection) url.openConnection();
+//            //set timeout for reading InputStream
+//            cc.setReadTimeout(5000);
+//            // set timeout for connection
+//            cc.setConnectTimeout(5000);
+//            //set HTTP method to GET
+//            cc.setRequestMethod("GET");
+//            //set it to true as we are connecting for input
+//            cc.setDoInput(true);
+//
+//            //reading HTTP response code
+//            int response = cc.getResponseCode();
+
+            //           //if response code is 200 / OK then read Inputstream
+//            if (response == HttpURLConnection.HTTP_OK) {
+//                DataInputStream = cc.getInputStream();
+//            }
 
         } catch (Exception e) {
             Log.e("lee - ", "Error in GetData", e);
         }
-        return DataInputStream;
+        return dataInputStream;
     }
 
     InputStream getRequestPOST(String urlString, String params){
@@ -154,6 +165,7 @@ public class HttpConnection extends AsyncTask {
         if (in != null) {
             res = ConvertStreamToString(in);
             _listener.onSuccess(res, _exchange);
+            Log.d("lee - ", "response success: " + res);
             return res;
         }else{
             _listener.onFail("-1","서버 연결에 실패하였습니다.");
