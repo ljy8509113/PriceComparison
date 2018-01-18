@@ -16,9 +16,9 @@ public class ConnectionManager {
         return instance;
     }
 
-    public void request(String url, String params, Common.EXCHANGE exchange, ConnectionListener listener, Common.HTTP_TYPE type){
+    public void request(String url, String params, Common.EXCHANGE exchange, ConnectionListener listener, Common.HTTP_TYPE type, String identifier){
         HttpConnection con = new HttpConnection();
-        con.request(url,params, type, exchange, listener);
+        con.request(url,params, type, exchange, listener, identifier);
     }
 
     public void response(){

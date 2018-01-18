@@ -30,11 +30,12 @@ public class HttpConnection extends AsyncTask {
                         String params,
                         Common.HTTP_TYPE type,
                         Common.EXCHANGE exchange,
-                        ConnectionListener listener)
+                        ConnectionListener listener,
+                        String identifier)
     {
         _exchange = exchange;
         _listener = listener;
-        execute(url, params, type);
+        execute(url, params, type, identifier);
     }
 
     InputStream getRequestGET(String urlString, String params){
@@ -150,6 +151,7 @@ public class HttpConnection extends AsyncTask {
         String url = objects[0].toString();
         String params = objects[1].toString();
         Common.HTTP_TYPE type = (Common.HTTP_TYPE)objects[2];
+        String identifier = objects[3].toString();
 
         InputStream in  = null;
         String res = null;
@@ -164,11 +166,11 @@ public class HttpConnection extends AsyncTask {
 
         if (in != null) {
             res = ConvertStreamToString(in);
-            _listener.onSuccess(res, _exchange);
+            _listener.onSuccess(res, _exchange, identifier);
             Log.d("lee - ", "response success: " + res);
             return res;
         }else{
-            _listener.onFail("-1","서버 연결에 실패하였습니다.");
+            _listener.onFail("-1","서버 연결에 실패하였습니다.", identifier);
             return null;
         }
     }

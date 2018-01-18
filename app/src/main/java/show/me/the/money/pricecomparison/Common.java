@@ -17,11 +17,11 @@ public class Common {
     public enum EXCHANGE {
         BITHUMB,
         UPBIT,
-        COBIT;
+        COINONE;
 
         public static EXCHANGE getExchange(String name){
-            if(name.equals(COBIT.name())){
-                return COBIT;
+            if(name.equals(COINONE.name())){
+                return COINONE;
             }else if(name.equals(UPBIT.name())){
                 return UPBIT;
             }else{
@@ -34,4 +34,9 @@ public class Common {
     }
 
     public static final String EXCHANGE_KEY = "exchange";
+
+//    static Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).registerTypeAdapterFactory(new ArrayAdapterFactory()).create();
+//    public static <T>T getConnectionResult(String res, Class<T> obj){
+//        return gson.fromJson(res, obj);
+//    }
 }

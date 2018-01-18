@@ -5,6 +5,22 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <ListView
+        android:id="@+id/list_coin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
+    </ListView>
+    <View
+    android:layout_width="match_parent"
+    android:layout_height="15dp"/>
+    <ListView
+        android:id="@+id/list_exchange"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+    </ListView>i
 
 </LinearLayout>

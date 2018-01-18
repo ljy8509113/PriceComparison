@@ -1,27 +1,28 @@
 package show.me.the.money.pricecomparison.network.response;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
+
+import show.me.the.money.pricecomparison.data.BithumbItem;
 
 /**
  * Created by KOITT on 2018-01-11.
  */
 
-public class ResponseBithumbPrice {
+public class ResponseBithumbPrice extends ResponseBase{
+    public String status;
+    public String date;
+    public Map<String, BithumbItem> data;
 
-    String status;
-    ArrayList<HashMap<String, Item>> data = new ArrayList<>();
-
-    class Item {
-        String opening_price;
-        String closing_price;
-        String min_price;
-        String max_price;
-        String average_price;
-        String units_traded;
-        String volume_1day;
-        String volume_7day;
-        String buy_price;
-        String sell_price;
+    @Override
+    public boolean isSuccess(){
+        try {
+            if(Integer.parseInt(status) == 0){
+                return true;
+            }else{
+                return false;
+            }
+        }catch (Exception e){
+            return false;
+        }
     }
 }

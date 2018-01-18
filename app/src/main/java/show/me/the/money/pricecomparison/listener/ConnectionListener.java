@@ -7,6 +7,6 @@ import show.me.the.money.pricecomparison.Common;
  */
 
 public interface ConnectionListener {
-    void onSuccess(String res, Common.EXCHANGE exchange);
-    void onFail(String code, String msg);
+    void onSuccess(String res, Common.EXCHANGE exchange, String identifier);
+    void onFail(String code, String msg, String identifier);
 }
