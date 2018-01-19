@@ -1,5 +1,8 @@
 package show.me.the.money.pricecomparison.util;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -48,10 +51,12 @@ public class NaturalDeserializer implements JsonDeserializer<Object> {
             array[i] = context.deserialize(json.get(i), Object.class);
         return array;
     }
-    private Object handleObject(JsonObject json, JsonDeserializationContext context) {
+    private Map<String, Object> handleObject(JsonObject json, JsonDeserializationContext context) {
         Map<String, Object> map = new HashMap<>();
-        for(Map.Entry<String, JsonElement> entry : json.entrySet())
+        for(Map.Entry<String, JsonElement> entry : json.entrySet()) {
             map.put(entry.getKey(), context.deserialize(entry.getValue(), Object.class));
+            Log.d("lee - ", entry.getValue().toString() );
+        }
         return map;
     }
 }

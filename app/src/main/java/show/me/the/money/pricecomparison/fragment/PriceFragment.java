@@ -2,6 +2,7 @@ package show.me.the.money.pricecomparison.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,12 +54,14 @@ public class PriceFragment extends Fragment implements ConnectionListener {
                     gsonBuilder.registerTypeAdapter(BithumbItem.class, new NaturalDeserializer());
                     Gson gson = gsonBuilder.create();
                     ResponseBithumbPrice result = gson.fromJson(res, ResponseBithumbPrice.class);
+                    result.makeMap();
 
                     if(result.isSuccess()){
-                        for(String key : result.data.keySet()){
-                            BithumbItem bithumbItem = result.data.get(key);
-                            bithumbItem.key = key;
-                            arrayBithumb.add(bithumbItem);
+                        for(String key : result.modifyMap.keySet()) {
+//                            BithumbItem item = g.fromJson(result.data.get(key).toString(), BithumbItem.class);
+                            BithumbItem obj = result.modifyMap.get(key);
+                            for(int i=0; i<obj.objs.length; i++)
+                                Log.d("lee - ", obj.objs[i] + "");
                         }
                     }
 

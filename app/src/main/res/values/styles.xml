@@ -3,9 +3,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <bithumbItem name="colorPrimary">@color/colorPrimary</bithumbItem>
-        <bithumbItem name="colorPrimaryDark">@color/colorPrimaryDark</bithumbItem>
-        <bithumbItem name="colorAccent">@color/colorAccent</bithumbItem>
+        <!--<Item name="colorPrimary">@color/colorPrimary</Item>-->
+        <!--<Item name="colorPrimaryDark">@color/colorPrimaryDark</Item>-->
+        <!--<Item name="colorAccent">@color/colorAccent</Item>-->
     </style>
 
 </resources>

@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout = null;
     ViewPager viewPager = null;
     Fragment[] _arrayFragment = {new PriceFragment(), new SettingFragment()};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
