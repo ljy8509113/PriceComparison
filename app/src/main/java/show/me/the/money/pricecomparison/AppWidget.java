@@ -8,15 +8,16 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.RemoteViews;
 
 /**
  * Implementation of App Widget functionality.
  */
 public class AppWidget extends AppWidgetProvider {
-    static final String ACTION_CLICK_1 = "CLICK_1";
-    static final String ACTION_CLICK_2 = "CLICK_2";
-    static final String ACTION_CLICK_3 = "CLICK_3";
+//    static final String ACTION_CLICK_1 = "CLICK_1";
+//    static final String ACTION_CLICK_2 = "CLICK_2";
+//    static final String ACTION_CLICK_3 = "CLICK_3";
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 
@@ -26,20 +27,21 @@ public class AppWidget extends AppWidgetProvider {
 //        views.setTextViewText(R.id.appwidget_text, widgetText);
 
         Intent intent = new Intent(context, AppWidget.class);
-        intent.setAction(ACTION_CLICK_1);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        PendingIntent pending1 = PendingIntent.getBroadcast(context, appWidgetId, intent, 0);
-        views.setOnClickPendingIntent(R.id.button_1, pending1);
+//        intent.setAction(ACTION_CLICK_1);
+//        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+//        PendingIntent pending1 = PendingIntent.getBroadcast(context, appWidgetId, intent, 0);
+//        views.setOnClickPendingIntent(R.id.button_1, pending1);
+//
+//        intent.setAction(ACTION_CLICK_2);
+//        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+//        PendingIntent pending2 = PendingIntent.getBroadcast(context, appWidgetId, intent, 0);
+//        views.setOnClickPendingIntent(R.id.button_2, pending2);
+//
+//        intent.setAction(ACTION_CLICK_3);
+//        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+//        PendingIntent pending3 = PendingIntent.getBroadcast(context, appWidgetId, intent, 0);
+//        views.setOnClickPendingIntent(R.id.button_3, pending3);
 
-        intent.setAction(ACTION_CLICK_2);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        PendingIntent pending2 = PendingIntent.getBroadcast(context, appWidgetId, intent, 0);
-        views.setOnClickPendingIntent(R.id.button_2, pending2);
-
-        intent.setAction(ACTION_CLICK_3);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        PendingIntent pending3 = PendingIntent.getBroadcast(context, appWidgetId, intent, 0);
-        views.setOnClickPendingIntent(R.id.button_3, pending3);
 
         /**
          * 레이아웃을 클릭하면 홈페이지 이동
@@ -76,23 +78,28 @@ public class AppWidget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         String action = intent.getAction();
-        // RENEW
-        if (action != null){
-            switch (action){
-                case ACTION_CLICK_1 :
-                    break;
-                case ACTION_CLICK_2:
-                    break;
-                case ACTION_CLICK_3 :
-                    break;
-            }
 
-            int id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-            updateAppWidget(context, AppWidgetManager.getInstance(context), id);   // 버튼이 클릭되면 새로고침 수행
-
-            Log.d("ExampleWidget", "onReceive: CLICK Button");
-            return;
+        if(action != null && action.equals(Common.COINBUTTON_TAG)){
+            int tag = intent.getIntExtra(Common.COINBUTTON_TAG, 0);
         }
+
+        // RENEW
+//        if (action != null){
+//            switch (action){
+//                case ACTION_CLICK_1 :
+//                    break;
+//                case ACTION_CLICK_2:
+//                    break;
+//                case ACTION_CLICK_3 :
+//                    break;
+//            }
+//
+//            int id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+//            updateAppWidget(context, AppWidgetManager.getInstance(context), id);   // 버튼이 클릭되면 새로고침 수행
+//
+//            Log.d("ExampleWidget", "onReceive: CLICK Button");
+//            return;
+//        }
     }
 
 }
