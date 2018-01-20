@@ -45,7 +45,7 @@ public class ResponseBithumbPrice extends ResponseBase{
                     String[] result = array[i].split("=");
                     b.setValue(result[0].replaceAll(" ",""), result[1].replaceAll(" ",""));
                 }
-
+                b.coinName = key;
                 modifyMap.put(key, b);
             }
         }

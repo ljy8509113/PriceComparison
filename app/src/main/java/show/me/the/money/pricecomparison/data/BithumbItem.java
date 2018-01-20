@@ -19,8 +19,7 @@ public class BithumbItem {
         public double volume_7day;
         public long buy_price;
         public long sell_price;
-
-        public Object[] objs = {opening_price, closing_price, min_price, max_price, average_price, units_traded, volume_1day, volume_7day, buy_price, sell_price};
+        public String coinName;
 
         public void setValue(String key, String value){
                 switch (key){

@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <ListView
-        android:id="@+id/list_coin"
+        android:id="@+id/list_coin_name"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
@@ -16,7 +16,7 @@
     android:layout_width="match_parent"
     android:layout_height="15dp"/>
     <ListView
-        android:id="@+id/list_exchange"
+        android:id="@+id/list_coin_price"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
