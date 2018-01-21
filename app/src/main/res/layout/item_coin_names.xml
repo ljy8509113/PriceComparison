@@ -7,12 +7,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="45dp"
         android:orientation="horizontal"
         android:layout_weight="1">
 
         <TextView
-            android:id="@+id/text_item_exchange_name"
+            android:id="@+id/text_item_coin_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:background="#000000" />
         <TextView
-            android:id="@+id/text_item_price"
+            android:id="@+id/text_item_is_bithumb"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -38,7 +38,7 @@
             android:layout_height="match_parent"
             android:background="#000000" />
         <TextView
-            android:id="@+id/text_item_premium"
+            android:id="@+id/text_item_is_coinone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -51,7 +51,7 @@
             android:layout_height="match_parent"
             android:background="#000000" />
         <TextView
-            android:id="@+id/text_item_avg"
+            android:id="@+id/text_item_is_upbit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"

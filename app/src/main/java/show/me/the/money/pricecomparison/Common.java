@@ -5,9 +5,13 @@ package show.me.the.money.pricecomparison;
  */
 
 public class Common {
+    //빗썸
     public static final String BITHUMB_URL = "https://api.bithumb.com/";
     public static final String BITHUMB_PUBLIC_URL = BITHUMB_URL + "public/";
     public static final String COINBUTTON_TAG = "COIN_BUTTON";
+
+    //코인원
+    public static final String COINONE_URL = "https://api.coinone.co.kr/";
 
     public enum HTTP_TYPE {
         GET,
