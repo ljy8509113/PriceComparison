@@ -5,16 +5,50 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        layout="@layout/header_exchange_coin_list"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"/>
+
     <ListView
         android:id="@+id/list_coin_name"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
-
     </ListView>
     <View
-    android:layout_width="match_parent"
-    android:layout_height="15dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"/>
+
+    <TextView
+        android:id="@+id/text_selected_coin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Coin"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#4641D9"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"/>
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        layout="@layout/header_exchange_price"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"/>
     <ListView
         android:id="@+id/list_coin_price"
         android:layout_width="match_parent"

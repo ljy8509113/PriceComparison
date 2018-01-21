@@ -17,6 +17,8 @@ public class CoinoneItem {
         public long yesterday_high;
         public long first;
         public String currency;
+        public String result;
+        public long timestamp;
 
         public void setValue(String key, String value){
                 switch (key){

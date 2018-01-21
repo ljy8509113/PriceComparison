@@ -20,6 +20,7 @@ public class BithumbItem {
         public long buy_price;
         public long sell_price;
         public String coinName;
+        public String status;
 
         public void setValue(String key, String value){
                 switch (key){

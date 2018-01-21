@@ -46,19 +46,19 @@
             android:textSize="20sp"
             android:layout_gravity="center"
             android:gravity="center"/>
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#000000" />
-        <TextView
-            android:id="@+id/text_item_is_upbit"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="24시간 평균"
-            android:textSize="20sp"
-            android:layout_gravity="center"
-            android:gravity="center"/>
+        <!--<View-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:background="#000000" />-->
+        <!--<TextView-->
+            <!--android:id="@+id/text_item_is_upbit"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="24시간 평균"-->
+            <!--android:textSize="20sp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:gravity="center"/>-->
 
     </LinearLayout>
 

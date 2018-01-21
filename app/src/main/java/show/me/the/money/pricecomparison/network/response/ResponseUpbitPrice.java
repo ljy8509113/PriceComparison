@@ -1,21 +1,20 @@
 package show.me.the.money.pricecomparison.network.response;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
-import show.me.the.money.pricecomparison.data.BithumbItem;
+import show.me.the.money.pricecomparison.data.UpbitItem;
 
 /**
  * Created by KOITT on 2018-01-11.
  */
 
-public class ResponseBithumbPrice extends ResponseBase{
-    public String status;
-    public BithumbItem data;
+public class ResponseUpbitPrice extends ResponseBase{
+    Object[] items;
+
     @Override
     public boolean isSuccess(){
         try {
-            if(Integer.parseInt(status) == 0){
+            if(items.length > 0){
                 return true;
             }else{
                 return false;

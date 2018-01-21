@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -13,8 +14,6 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
-import org.w3c.dom.Text;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -27,10 +26,12 @@ import show.me.the.money.pricecomparison.data.BithumbItem;
 import show.me.the.money.pricecomparison.data.CoinNameData;
 import show.me.the.money.pricecomparison.data.CoinoneItem;
 import show.me.the.money.pricecomparison.data.ExchangeCoinPrice;
+import show.me.the.money.pricecomparison.data.UpbitItem;
 import show.me.the.money.pricecomparison.listener.ConnectionListener;
 import show.me.the.money.pricecomparison.network.ConnectionManager;
 import show.me.the.money.pricecomparison.network.response.ResponseBithumbPrice;
-import show.me.the.money.pricecomparison.network.response.ResponseCoinonePrice;
+import show.me.the.money.pricecomparison.network.response.ResponseBithumbPriceList;
+import show.me.the.money.pricecomparison.network.response.ResponseUpbitPrice;
 import show.me.the.money.pricecomparison.util.NaturalDeserializer;
 import show.me.the.money.pricecomparison.view.LoadingView;
 
@@ -38,7 +39,7 @@ import show.me.the.money.pricecomparison.view.LoadingView;
  * Created by KOITT on 2018-01-15.
  */
 
-public class PriceFragment extends Fragment implements ConnectionListener {
+public class PriceFragment extends Fragment implements ConnectionListener, AdapterView.OnItemClickListener {
 
     class ConnectionComplate{
         public boolean isBithumb = false;
@@ -52,16 +53,24 @@ public class PriceFragment extends Fragment implements ConnectionListener {
                 return false;
         }
 
+        public void setDefault(){
+            isUpBit = false;
+            isBithumb = false;
+            isCoinOne = false;
+        }
     }
 
     final static String IDENTIFIER_BITHUMB_LIST = "bithumb_list";
     final static String IDENTIFIER_COINONE_LIST = "coinone_list";
     final static String IDENTIFIER_BITHUMB_COIN = "bithumb_coin";
     final static String IDENTIFIER_COINONE_COIN = "coinone_coin";
+    final static String IDENTIFIER_UPBIT_COIN = "upbit_coin";
+    final String TAG_COIN_NAME="1";
+    final String TAG_EXCHANGE="2";
+    final int NOT_DATA = -1;
 
     GsonBuilder _gsonBuilder = new GsonBuilder();
-    HashMap<String, ExchangeCoinPrice> _mapPriceBithumb = new HashMap<>();
-    HashMap<String, ExchangeCoinPrice> _mapPriceCoinone = new HashMap<>();
+    HashMap<Common.EXCHANGE, ExchangeCoinPrice> _mapPrice = new HashMap<>();
     ConnectionComplate isConnection = new ConnectionComplate();
 
     ArrayList<String > _arrayBithumbCoinName = new ArrayList<>();
@@ -70,13 +79,15 @@ public class PriceFragment extends Fragment implements ConnectionListener {
 
     ArrayList<ExchangeCoinPrice> _arrayPrice = new ArrayList<>();
     PriceAdapter _adapterPrice;
-    String selectCoinName = "";
+    String _selectCoinName = "";
     ArrayList<CoinNameData> _arrayCoinNames = new ArrayList<>();
 
     ListView _listPrice;
     ListView _listCoins;
+    TextView _txtSelectedCoin;
 
     CoinNamesAdapter _adapterCoins;
+    Gson _gson = new Gson();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,27 +98,76 @@ public class PriceFragment extends Fragment implements ConnectionListener {
         _adapterPrice = new PriceAdapter(_arrayPrice);
         _listPrice = (ListView)v.findViewById(R.id.list_coin_price);
         _listPrice.setAdapter(_adapterPrice);
+        _txtSelectedCoin = v.findViewById(R.id.text_selected_coin);
 
         _listCoins = v.findViewById(R.id.list_coin_name);
         _adapterCoins = new CoinNamesAdapter(_arrayCoinNames);
         _listCoins.setAdapter(_adapterCoins);
 
-        selectCoinName = "XRP";
+        _listPrice.setOnItemClickListener(this);
+        _listPrice.setTag(TAG_EXCHANGE);
+        _listCoins.setOnItemClickListener(this);
+        _listCoins.setTag(TAG_COIN_NAME);
+
+        _selectCoinName = "XRP";
         requestALLCoinPrice();
 
         return v;
 
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        switch (adapterView.getTag().toString()){
+            case TAG_COIN_NAME:
+                LoadingView.Instance().show(getContext());
+                String coinName = ((TextView)view.findViewById(R.id.text_item_coin_name)).getText().toString();
+                requestCoinPrice(coinName);
+                break;
+            case TAG_EXCHANGE:
+
+                break;
+        }
+    }
+
     void requestALLCoinPrice(){
-        isConnection.isUpBit = true;
+//        isConnection.isUpBit = true;
         ConnectionManager.Instance().request(Common.BITHUMB_PUBLIC_URL, "ticker/ALL", Common.EXCHANGE.BITHUMB, this, Common.HTTP_TYPE.GET,IDENTIFIER_BITHUMB_LIST );
         ConnectionManager.Instance().request(Common.COINONE_URL,"ticker?currency=all", Common.EXCHANGE.COINONE, this, Common.HTTP_TYPE.GET, IDENTIFIER_COINONE_LIST);
+        ConnectionManager.Instance().request(Common.UPBIT_URL, _selectCoinName+"&count=1", Common.EXCHANGE.UPBIT, this, Common.HTTP_TYPE.GET, IDENTIFIER_UPBIT_COIN);
     }
 
     void requestCoinPrice(String coinName){
-        ConnectionManager.Instance().request(Common.BITHUMB_PUBLIC_URL, "ticker/"+coinName, Common.EXCHANGE.BITHUMB, this, Common.HTTP_TYPE.GET,IDENTIFIER_BITHUMB_COIN );
-        ConnectionManager.Instance().request(Common.COINONE_URL,"ticker?currency="+coinName.toLowerCase(), Common.EXCHANGE.COINONE, this, Common.HTTP_TYPE.GET, IDENTIFIER_COINONE_COIN);
+        _selectCoinName = coinName;
+        boolean isExBithumb = false;
+        boolean isExCoinone = false;
+        for(String name : _arrayBithumbCoinName){
+            if(name.toUpperCase().equals(coinName.toUpperCase())){
+                ConnectionManager.Instance().request(Common.BITHUMB_PUBLIC_URL, "ticker/"+coinName, Common.EXCHANGE.BITHUMB, this, Common.HTTP_TYPE.GET,IDENTIFIER_BITHUMB_COIN );
+                isExBithumb = true;
+                break;
+            }
+        }
+
+        for(String name : _arrayCoinoneCoinName){
+            if(name.toUpperCase().equals(coinName.toUpperCase())){
+                ConnectionManager.Instance().request(Common.COINONE_URL,"ticker?currency="+coinName.toLowerCase(), Common.EXCHANGE.COINONE, this, Common.HTTP_TYPE.GET, IDENTIFIER_COINONE_COIN);
+                isExCoinone = true;
+                break;
+            }
+        }
+
+        ConnectionManager.Instance().request(Common.UPBIT_URL, coinName+"&count=1", Common.EXCHANGE.UPBIT, this, Common.HTTP_TYPE.GET, IDENTIFIER_UPBIT_COIN);
+
+        if(!isExBithumb) {
+            isConnection.isBithumb = true;
+            upDateListView(coinName, getBithumbItem(null, coinName));
+        }
+
+        if(!isExCoinone) {
+            isConnection.isCoinOne = true;
+            upDateListView(coinName, getCoinoneItem(null, coinName));
+        }
     }
 
     @Override
@@ -124,43 +184,68 @@ public class PriceFragment extends Fragment implements ConnectionListener {
 
                     _gsonBuilder.registerTypeAdapter(BithumbItem.class, new NaturalDeserializer());
                     Gson gson = _gsonBuilder.create();
-                    ResponseBithumbPrice result = gson.fromJson(res, ResponseBithumbPrice.class);
+                    ResponseBithumbPriceList result = gson.fromJson(res, ResponseBithumbPriceList.class);
                     result.makeMap();
+                    BithumbItem item = null;
 
                     if(result.isSuccess()){
                         for(String key : result.modifyMap.keySet()) {
-                            BithumbItem obj = result.modifyMap.get(key);
-                            ExchangeCoinPrice price = new ExchangeCoinPrice(Common.EXCHANGE.BITHUMB, key, obj.closing_price, obj.average_price);
-                            _mapPriceBithumb.put(key, price);
+                            //BithumbItem obj = result.modifyMap.get(key);
+                            //setBithumbItem(obj, key);
+                            if(_selectCoinName.equals(key)){
+                                item = result.modifyMap.get(key);
+                            }
                             _arrayBithumbCoinName.add(key);
                         }
                     }
-
                     isConnection.isBithumb = true;
-                    upDateListView(selectCoinName);
-
+                    upDateListView(_selectCoinName, getBithumbItem(item, _selectCoinName));
+                }else if(identifier.equals(IDENTIFIER_BITHUMB_COIN)){
+                    Log.d("lee", res);
+                    ResponseBithumbPrice info = _gson.fromJson(res, ResponseBithumbPrice.class);
+                    isConnection.isBithumb = true;
+                    upDateListView(_selectCoinName, getBithumbItem(info.data, _selectCoinName));
                 }
                 break;
             case COINONE:
-                Gson gson = new Gson();
-                Type stringStringMap = new TypeToken<Map<String, Object>>(){}.getType();
-                Map<String,Object> map = gson.fromJson(res, stringStringMap);
-
-                if(Integer.parseInt(map.get("errorCode").toString()) == 0 && map.get("result").equals("success")){
-                    for(String key : map.keySet()){
-                        if(!key.equals("errorCode") && !key.equals("result") && !key.equals("timestamp")){
-                            CoinoneItem item = (CoinoneItem) gson.fromJson(map.get(key).toString(), CoinoneItem.class);
-                            ExchangeCoinPrice price = new ExchangeCoinPrice(Common.EXCHANGE.COINONE, key.toUpperCase(), item.last, (item.high+item.low)/2);
-                            _mapPriceCoinone.put(key.toUpperCase(), price);
-                            _arrayCoinoneCoinName.add(key.toUpperCase());
+                if(identifier.equals(IDENTIFIER_COINONE_LIST)){
+                    Type stringStringMap = new TypeToken<Map<String, Object>>(){}.getType();
+                    Map<String,Object> map = _gson.fromJson(res, stringStringMap);
+                    CoinoneItem item = null;
+                    if(Integer.parseInt(map.get("errorCode").toString()) == 0 && map.get("result").equals("success")){
+                        for(String key : map.keySet()){
+                            if(!key.equals("errorCode") && !key.equals("result") && !key.equals("timestamp")){
+                                if(_selectCoinName.equals(key.toUpperCase()))
+                                    item = (CoinoneItem) _gson.fromJson(map.get(key).toString(), CoinoneItem.class);
+//                                setCoinoneIte(item, key);
+                                _arrayCoinoneCoinName.add(key.toUpperCase());
+                            }
                         }
                     }
-                }
 
-                isConnection.isCoinOne = true;
-                upDateListView(selectCoinName);
+                    isConnection.isCoinOne = true;
+                    upDateListView(_selectCoinName, getCoinoneItem(item, _selectCoinName));
+
+                }else if(identifier.equals(IDENTIFIER_COINONE_COIN)){
+                    Log.d("lee", res);
+                    CoinoneItem item = _gson.fromJson(res, CoinoneItem.class);
+                    isConnection.isCoinOne = true;
+                    upDateListView(_selectCoinName, getCoinoneItem(item,  _selectCoinName));
+                }
                 break;
             case UPBIT:
+                if(identifier.equals(IDENTIFIER_UPBIT_COIN)){
+                    Type stringStringMap = new TypeToken<ArrayList<UpbitItem>>(){}.getType();
+                    ArrayList<UpbitItem> array = _gson.fromJson(res, stringStringMap);
+                    isConnection.isUpBit = true;
+                    if(array != null && array.size() > 0){
+                        UpbitItem item = array.get(0);
+                        upDateListView(_selectCoinName, getUpbitItem(item, _selectCoinName));
+                    }else{
+                        upDateListView(_selectCoinName, getUpbitItem(null, _selectCoinName));
+                    }
+                    Log.d("lee", array.toString());
+                }
                 break;
         }
     }
@@ -170,9 +255,34 @@ public class PriceFragment extends Fragment implements ConnectionListener {
 
     }
 
+    ExchangeCoinPrice getBithumbItem(BithumbItem item, String key) {
+        if (item != null)
+            return getCoinPriceItem(Common.EXCHANGE.BITHUMB, key, item.closing_price, item.average_price);
+        else
+            return getCoinPriceItem(Common.EXCHANGE.BITHUMB, key, NOT_DATA, NOT_DATA);
+    }
+
+    ExchangeCoinPrice getCoinoneItem(CoinoneItem item, String key) {
+        if (item != null)
+            return getCoinPriceItem(Common.EXCHANGE.COINONE, key, item.last, (double) ((item.high + item.low) / 2.0));
+        else
+            return getCoinPriceItem(Common.EXCHANGE.COINONE, key, NOT_DATA, NOT_DATA);
+    }
+
+    ExchangeCoinPrice getUpbitItem(UpbitItem item, String key) {
+        if (item != null)
+            return getCoinPriceItem(Common.EXCHANGE.UPBIT, key, (long)item.tradePrice, (double) ((item.highPrice + item.lowPrice) / 2.0));
+        else
+            return getCoinPriceItem(Common.EXCHANGE.UPBIT, key, NOT_DATA, NOT_DATA);
+    }
+
+    ExchangeCoinPrice getCoinPriceItem(Common.EXCHANGE exchange, String coinName, long price, double premium){
+        ExchangeCoinPrice item = new ExchangeCoinPrice(exchange, coinName.toUpperCase(), price, premium);
+        return item;
+    }
+
     void makeCoinNameList(){
         _mapCoinNames.clear();
-
             for(String key: _arrayBithumbCoinName){
                 CoinNameData data = new CoinNameData(key);
                 data.isBithumb = true;
@@ -204,17 +314,23 @@ public class PriceFragment extends Fragment implements ConnectionListener {
 
     }
 
-    void upDateListView(String coinName){
+    void upDateListView(final String coinName, ExchangeCoinPrice item){
+        _mapPrice.put(item.exchangeName, item);
         if(isConnection.isComplate()){
+            isConnection.setDefault();
             _arrayPrice.clear();
-            _arrayPrice.add(_mapPriceBithumb.get(coinName));
-            _arrayPrice.add(_mapPriceCoinone.get(coinName));
+//            _arrayPrice.add(_mapPriceBithumb.get(coinName));
+//            _arrayPrice.add(_mapPriceCoinone.get(coinName));
+          for(Common.EXCHANGE key: _mapPrice.keySet())
+              _arrayPrice.add(_mapPrice.get(key));
             _adapterPrice.updateData(_arrayPrice);
 
         getActivity().runOnUiThread(
                 new Runnable() {
                     public void run() {
                         _adapterPrice.notifyDataSetChanged();
+                        _txtSelectedCoin.setText(">"+coinName);
+
                     }
                 });
 
@@ -315,7 +431,7 @@ public class PriceFragment extends Fragment implements ConnectionListener {
                 holder.name = view.findViewById(R.id.text_item_coin_name);
                 holder.isBithumb = view.findViewById(R.id.text_item_is_bithumb);
                 holder.isCoinone = view.findViewById(R.id.text_item_is_coinone);
-                holder.isUpbit = view.findViewById(R.id.text_item_is_upbit);
+//                holder.isUpbit = view.findViewById(R.id.text_item_is_upbit);
                 view.setTag(holder);
 
             }else{
@@ -326,7 +442,7 @@ public class PriceFragment extends Fragment implements ConnectionListener {
             holder.name.setText(item.name);
             holder.isBithumb.setText(item.isBithumb ? "O":"X");
             holder.isCoinone.setText(item.isCoinone?"O":"X");
-            holder.isUpbit.setText(item.isUpbit?"O":"X");
+//            holder.isUpbit.setText(item.isUpbit?"O":"X");
 
             return view;
         }
@@ -339,7 +455,7 @@ public class PriceFragment extends Fragment implements ConnectionListener {
             TextView name;
             TextView isBithumb;
             TextView isCoinone;
-            TextView isUpbit;
+//            TextView isUpbit;
         }
     }
 }

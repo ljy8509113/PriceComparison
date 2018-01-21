@@ -11,7 +11,7 @@ import show.me.the.money.pricecomparison.data.CoinoneItem;
  * Created by KOITT on 2018-01-11.
  */
 
-public class ResponseCoinonePrice extends ResponseBase{
+public class ResponseCoinonePriceList extends ResponseBase{
     public String errorCode;
     public Map<String, CoinoneItem> modifyMap;
 

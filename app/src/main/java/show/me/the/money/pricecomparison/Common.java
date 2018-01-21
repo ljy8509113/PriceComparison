@@ -13,6 +13,9 @@ public class Common {
     //코인원
     public static final String COINONE_URL = "https://api.coinone.co.kr/";
 
+    //업비트
+    public static final String UPBIT_URL = "https://crix-api-endpoint.upbit.com/v1/crix/candles/days?code=CRIX.UPBIT.KRW-";
+
     public enum HTTP_TYPE {
         GET,
         POST
