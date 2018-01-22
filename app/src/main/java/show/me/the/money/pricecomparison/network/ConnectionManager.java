@@ -1,5 +1,7 @@
 package show.me.the.money.pricecomparison.network;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import show.me.the.money.pricecomparison.Common;
 import show.me.the.money.pricecomparison.listener.ConnectionListener;
 
@@ -16,13 +18,9 @@ public class ConnectionManager {
         return instance;
     }
 
-    public void request(String url, String params, Common.EXCHANGE exchange, ConnectionListener listener, Common.HTTP_TYPE type, String identifier){
+    public void request(String url, String params, ConnectionListener listener, Common.HTTP_TYPE type, String identifier){
         HttpConnection con = new HttpConnection();
-        con.request(url,params, type, exchange, listener, identifier);
-    }
-
-    public void response(){
-
+        con.request(url,params, type, listener, identifier);
     }
 
 }

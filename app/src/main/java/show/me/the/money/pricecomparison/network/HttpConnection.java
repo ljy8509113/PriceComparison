@@ -24,16 +24,13 @@ import show.me.the.money.pricecomparison.listener.ConnectionListener;
 public class HttpConnection extends AsyncTask {
 
     ConnectionListener _listener;
-    Common.EXCHANGE _exchange;
 
     public void request(String url,
                         String params,
                         Common.HTTP_TYPE type,
-                        Common.EXCHANGE exchange,
                         ConnectionListener listener,
                         String identifier)
     {
-        _exchange = exchange;
         _listener = listener;
         execute(url, params, type, identifier);
     }
@@ -166,7 +163,7 @@ public class HttpConnection extends AsyncTask {
 
         if (in != null) {
             res = ConvertStreamToString(in);
-            _listener.onSuccess(res, _exchange, identifier);
+            _listener.onSuccess(res, identifier);
             Log.d("lee - ", "response success: " + res);
             return res;
         }else{
