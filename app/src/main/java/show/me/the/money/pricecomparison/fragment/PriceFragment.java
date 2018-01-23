@@ -16,6 +16,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
@@ -73,7 +80,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
     final String IDENTIFIER_COINONE_COIN = "coinone_coin";
     final String IDENTIFIER_UPBIT_COIN = "upbit_coin";
     final String IDENTIFIER_POLONIEX_LIST = "poloniex_list";
-    final String IDENTIFIER_USD_TO_KRW = "krw";
+    public static final String IDENTIFIER_USD_TO_KRW = "krw";
 
     final String TAG_COIN_NAME="1";
     final String TAG_EXCHANGE="2";
@@ -122,15 +129,6 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
         _selectCoinName = "XRP";
         requestALLCoinPrice();
         Log.d("lee", "view create");
-
-        try {
-            //String encodedString = URLEncoder.encode(Common.CHECK_KRW_URL, "UTF-8");
-            String decodedString = URLDecoder.decode(Common.CHECK_KRW_URL, "UTF-8");
-            Log.d("lee", "decoding : " + decodedString);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
 
         return v;
     }
@@ -304,7 +302,16 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
 
             case IDENTIFIER_USD_TO_KRW:
             {
-                Log.d("lee","krw : " + res);
+                //Log.d("lee","krw : " + res);
+                try{
+                    FileWriter fw = new FileWriter(Common.getPath());
+                    fw.write(res);
+                }catch (FileNotFoundException e){
+                    e.printStackTrace();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+
             }
         }
     }

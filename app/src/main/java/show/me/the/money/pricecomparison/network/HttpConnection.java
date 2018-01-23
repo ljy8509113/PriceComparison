@@ -3,6 +3,9 @@ package show.me.the.money.pricecomparison.network;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,6 +18,7 @@ import java.net.URLConnection;
 import javax.net.ssl.HttpsURLConnection;
 
 import show.me.the.money.pricecomparison.Common;
+import show.me.the.money.pricecomparison.fragment.PriceFragment;
 import show.me.the.money.pricecomparison.listener.ConnectionListener;
 
 /**
@@ -150,25 +154,36 @@ public class HttpConnection extends AsyncTask {
         Common.HTTP_TYPE type = (Common.HTTP_TYPE)objects[2];
         String identifier = objects[3].toString();
 
-        InputStream in  = null;
-        String res = null;
-
-        if(type == Common.HTTP_TYPE.GET){
-            //GET
-            in = getRequestGET(url, params);
+        if(identifier.equals(PriceFragment.IDENTIFIER_USD_TO_KRW)){
+            try{
+                Document google1 = Jsoup.connect(Common.CHECK_KRW_URL).get();
+                return null;
+            }catch (IOException e){
+                _listener.onFail("-1","환율 정보 파싱 실패", identifier);
+                return null;
+            }
         }else{
-            //POST
-            in = getRequestPOST(url, params);
+            InputStream in  = null;
+            String res = null;
+
+            if(type == Common.HTTP_TYPE.GET){
+                //GET
+                in = getRequestGET(url, params);
+            }else{
+                //POST
+                in = getRequestPOST(url, params);
+            }
+
+            if (in != null) {
+                res = ConvertStreamToString(in);
+                _listener.onSuccess(res, identifier);
+                Log.d("lee - ", "response success: " + res);
+                return res;
+            }else{
+                _listener.onFail("-1","서버 연결에 실패하였습니다.", identifier);
+                return null;
+            }
         }
 
-        if (in != null) {
-            res = ConvertStreamToString(in);
-            _listener.onSuccess(res, identifier);
-            Log.d("lee - ", "response success: " + res);
-            return res;
-        }else{
-            _listener.onFail("-1","서버 연결에 실패하였습니다.", identifier);
-            return null;
-        }
     }
 }
