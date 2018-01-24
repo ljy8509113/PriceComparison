@@ -4,7 +4,10 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
+import org.jsoup.UnsupportedMimeTypeException;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -14,6 +17,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -156,9 +162,42 @@ public class HttpConnection extends AsyncTask {
 
         if(identifier.equals(PriceFragment.IDENTIFIER_USD_TO_KRW)){
             try{
-                Document google1 = Jsoup.connect(Common.CHECK_KRW_URL).get();
+                String decoding = null;
+                try{
+                    decoding = URLDecoder.decode(Common.CHECK_KRW_URL, "utf-8");
+                    Log.d(Common.TAG, "decoding : " + decoding);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                UnsupportedMimeTypeException mimeType = new UnsupportedMimeTypeException("Hey this is Mime",  "application/json", Common.CHECK_KRW_URL);
+                String mime = mimeType.getMimeType();
+
+                Document doc = Jsoup.connect(Common.CHECK_KRW_URL).ignoreContentType(true).get();
+
+
+//                Document document = Jsoup.connect(decoding).get();
+                Map<String,String> result = new HashMap<>();
+
+//                Elements elements = doc.select(".gcw_inputFsCw1k6p3");
+                Elements elements = doc.select("input");
+//                Elements e = elements.attr("id","gcw_inputFsCw1k6p3");
+
+                for(Element e : elements){
+//                     Element eee = e.getElementById("\'gcw_valFsCw1k6p35\'");
+                    if(e.id().contains("gcw_valFsCw1k6p35")){
+                        Log.d(Common.TAG, e.toString());
+                        String resultStr =  e.attr("rate").replace("\'","");
+                        resultStr = resultStr.replace("'\\","");
+                        resultStr = resultStr.replace("\\","");
+                        _listener.onSuccess(resultStr, identifier);
+                        return null;
+                    }
+                }
+                _listener.onFail("fail_krw", "환율정보 가져오기 실패", identifier);
                 return null;
             }catch (IOException e){
+                e.printStackTrace();
                 _listener.onFail("-1","환율 정보 파싱 실패", identifier);
                 return null;
             }

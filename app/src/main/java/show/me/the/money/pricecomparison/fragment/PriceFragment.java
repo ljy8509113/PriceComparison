@@ -105,6 +105,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
 
     CoinNamesAdapter _adapterCoins;
     Gson _gson = new Gson();
+    double _krw = NOT_DATA;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,7 +128,8 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
         _listCoins.setTag(TAG_COIN_NAME);
 
         _selectCoinName = "XRP";
-        requestALLCoinPrice();
+//        requestALLCoinPrice();
+        ConnectionManager.Instance().request(Common.CHECK_KRW_URL, "", this, Common.HTTP_TYPE.GET, IDENTIFIER_USD_TO_KRW);
         Log.d("lee", "view create");
 
         return v;
@@ -302,16 +304,14 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
 
             case IDENTIFIER_USD_TO_KRW:
             {
-                //Log.d("lee","krw : " + res);
+                Log.d(Common.TAG, res);
                 try{
-                    FileWriter fw = new FileWriter(Common.getPath());
-                    fw.write(res);
-                }catch (FileNotFoundException e){
-                    e.printStackTrace();
-                }catch (IOException e){
-                    e.printStackTrace();
+                    _krw = (int)Double.parseDouble(res);
+                }catch(Exception e){
+                    _krw = NOT_DATA;
                 }
 
+                requestALLCoinPrice();
             }
         }
     }
@@ -343,10 +343,18 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
     }
 
     ExchangeCoinPrice getPoloniexItem(PoloniexItem item, String key) {
-        if (item != null)
-            return getCoinPriceItem(Common.EXCHANGE.POLONIEX, key, item.last, 0);
-        else
+        if (item != null) {
+            if(_krw == NOT_DATA){
+                item.isKRW = false;
+                return getCoinPriceItem(Common.EXCHANGE.POLONIEX, key, item.last, NOT_DATA);
+            }else{
+                item.isKRW = true;
+                return getCoinPriceItem(Common.EXCHANGE.POLONIEX, key, item.last*_krw, 0);
+            }
+
+        }else {
             return getCoinPriceItem(Common.EXCHANGE.POLONIEX, key, NOT_DATA, NOT_DATA);
+        }
     }
 
     ExchangeCoinPrice getCoinPriceItem(Common.EXCHANGE exchange, String coinName, double price, double premium){
@@ -393,24 +401,30 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
             isConnection.setDefault();
             _arrayPrice.clear();
 
-            for(Common.EXCHANGE key: _mapPrice.keySet())
-              _arrayPrice.add(_mapPrice.get(key));
+            for(Common.EXCHANGE key: _mapPrice.keySet()) {
+                ExchangeCoinPrice info =_mapPrice.get(key);
+                if(key == Common.EXCHANGE.POLONIEX) {
+                    info.setKRW(_krw);
+                    info.setPremium(NOT_DATA);
+                }else{
+//                    info.setPremium();
+                }
+//                    _arrayPrice.add();
+            }
 
-            ConnectionManager.Instance().request(Common.CHECK_KRW_URL, "", this, Common.HTTP_TYPE.GET, IDENTIFIER_USD_TO_KRW);
 
-//            _adapterPrice.updateData(_arrayPrice);
-//
-//            getActivity().runOnUiThread(
-//                new Runnable() {
-//                    public void run() {
-//                        _adapterPrice.notifyDataSetChanged();
-//                        _txtSelectedCoin.setText(">"+coinName);
-//
-//                    }
-//                });
-//
-//            makeCoinNameList();
         }
+    }
+
+    void reflushListView(){
+        _adapterPrice.updateData(_arrayPrice);
+        getActivity().runOnUiThread(
+                new Runnable() {
+                    public void run() {
+                        _txtSelectedCoin.setText(">"+_selectCoinName);
+                        _adapterPrice.notifyDataSetChanged();
+                    }
+                });
     }
 
     class PriceAdapter extends BaseAdapter{
@@ -456,7 +470,10 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
             ExchangeCoinPrice item = array.get(i);
             holder.exchange.setText(item.exchangeName.name());
             holder.price.setText(item.price == NOT_DATA ? "-":Common.toNumFormat(item.price));
-            holder.premium.setText(item.premium == NOT_DATA?"-":Common.toNumFormat(item.premium));
+
+            String strPremium = String.format("%.2f", item.premium);
+
+            holder.premium.setText(item.premium == NOT_DATA?"-":strPremium+"%");
             holder.averge.setText(item.average_price == NOT_DATA ? "-":Common.toNumFormat(item.average_price));
 
             return view;

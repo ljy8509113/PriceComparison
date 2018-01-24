@@ -1,5 +1,7 @@
 package show.me.the.money.pricecomparison.data;
 
+import android.util.Log;
+
 import show.me.the.money.pricecomparison.Common;
 
 /**
@@ -20,12 +22,16 @@ public class ExchangeCoinPrice {
         this.average_price = average_price;
     }
 
-    public void setPremium(long price){
-        premium = this.price / price - 1;
+    public void setPremium(double price){
+        if(price == -1)
+            premium = -1;
+        else
+            premium = (this.price / price - 1)*100;
+        Log.d(Common.TAG, premium+ "%");
     }
 
-    public void setKRW(int krw){
-        price = price * krw;
+    public void setKRW(double krw){
+        price = (int)(price * krw);
     }
 
 }

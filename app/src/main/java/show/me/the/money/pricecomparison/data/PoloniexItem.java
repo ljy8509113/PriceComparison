@@ -15,6 +15,7 @@ public class PoloniexItem {
         public int isFrozen;
         public double high24hr;
         public double low24hr;
+        public boolean isKRW = false;
 
 //        public void setValue(String key, String value){
 //                switch (key){
