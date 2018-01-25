@@ -76,6 +76,9 @@ public class Common {
     }
 
     public static String TAG = "lee_tag";
+    public static String SELECT_COIN = "select_coin";
+    public static String PREFRENCE = "pref";
+
 //    static Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).registerTypeAdapterFactory(new ArrayAdapterFactory()).create();
 //    public static <T>T getConnectionResult(String res, Class<T> obj){
 //        return gson.fromJson(res, obj);

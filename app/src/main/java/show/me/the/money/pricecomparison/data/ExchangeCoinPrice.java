@@ -23,15 +23,19 @@ public class ExchangeCoinPrice {
     }
 
     public void setPremium(double price){
-        if(price == -1)
+        if(price == -1) {
             premium = -1;
-        else
-            premium = (this.price / price - 1)*100;
+        }else {
+            if(price > 0)
+                premium = (this.price / price - 1) * 100;
+            else
+                premium = -1;
+        }
         Log.d(Common.TAG, premium+ "%");
     }
 
-    public void setKRW(double krw){
-        price = (int)(price * krw);
-    }
+//    public void setKRW(double krw){
+//        price = (int)(price * krw);
+//    }
 
 }

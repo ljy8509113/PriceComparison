@@ -46,7 +46,7 @@ public class SettingFragment extends Fragment {
         _adapter = new CoinListAdapter(_arrayCoinItem);
         _listViewCoin.setAdapter(_adapter);
 
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences pref = getActivity().getSharedPreferences(Common.PREFRENCE, Context.MODE_PRIVATE);
         Common.EXCHANGE selectedExchange = Common.EXCHANGE.getExchange(pref.getString(Common.EXCHANGE_KEY, Common.EXCHANGE.BITHUMB.name()));
 
         for(int i=0; i<Common.EXCHANGE.values().length;i ++){

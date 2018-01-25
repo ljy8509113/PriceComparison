@@ -11,10 +11,13 @@ import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.RemoteViews;
 
+import show.me.the.money.pricecomparison.listener.ConnectionListener;
+import show.me.the.money.pricecomparison.network.ConnectionManager;
+
 /**
  * Implementation of App Widget functionality.
  */
-public class AppWidget extends AppWidgetProvider {
+public class AppWidget extends AppWidgetProvider implements ConnectionListener {
 //    static final String ACTION_CLICK_1 = "CLICK_1";
 //    static final String ACTION_CLICK_2 = "CLICK_2";
 //    static final String ACTION_CLICK_3 = "CLICK_3";
@@ -54,6 +57,8 @@ public class AppWidget extends AppWidgetProvider {
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
+
+
     }
 
     @Override
@@ -102,5 +107,14 @@ public class AppWidget extends AppWidgetProvider {
 //        }
     }
 
+    @Override
+    public void onSuccess(String res, String identifier) {
+
+    }
+
+    @Override
+    public void onFail(String code, String msg, String identifier) {
+
+    }
 }
 

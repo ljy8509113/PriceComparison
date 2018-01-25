@@ -16,7 +16,7 @@
             android:id="@+id/text_header_exchange_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.8"
             android:text="거래소"
             android:textSize="20sp"
             android:layout_gravity="center"
@@ -29,7 +29,7 @@
             android:id="@+id/text_header_price"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.6"
             android:text="현제가"
             android:textSize="20sp"
             android:layout_gravity="center"
@@ -42,24 +42,24 @@
             android:id="@+id/text_header_premium"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.9"
             android:text="프리미엄"
             android:textSize="20sp"
             android:layout_gravity="center"
             android:gravity="center"/>
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#000000" />
-        <TextView
-            android:id="@+id/text_header_contrast"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="24시간 대비"
-            android:textSize="20sp"
-            android:layout_gravity="center"
-            android:gravity="center"/>
+        <!--<View-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:background="#000000" />-->
+        <!--<TextView-->
+            <!--android:id="@+id/text_header_contrast"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="24시간 대비"-->
+            <!--android:textSize="20sp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:gravity="center"/>-->
 
     </LinearLayout>
 

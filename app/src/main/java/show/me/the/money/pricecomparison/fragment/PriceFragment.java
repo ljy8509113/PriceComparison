@@ -1,6 +1,9 @@
 package show.me.the.money.pricecomparison.fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -127,7 +130,9 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
         _listCoins.setOnItemClickListener(this);
         _listCoins.setTag(TAG_COIN_NAME);
 
-        _selectCoinName = "XRP";
+        SharedPreferences pref = getActivity().getSharedPreferences(Common.PREFRENCE, Context.MODE_PRIVATE);
+        _selectCoinName = pref.getString(Common.SELECT_COIN,"BTC");
+
 //        requestALLCoinPrice();
         ConnectionManager.Instance().request(Common.CHECK_KRW_URL, "", this, Common.HTTP_TYPE.GET, IDENTIFIER_USD_TO_KRW);
         Log.d("lee", "view create");
@@ -188,12 +193,12 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
 
         if(!isExBithumb) {
             isConnection.isBithumb = true;
-            upDateListView(coinName, getBithumbItem(null, coinName));
+            upDateListView(false, getBithumbItem(null, coinName));
         }
 
         if(!isExCoinone) {
             isConnection.isCoinOne = true;
-            upDateListView(coinName, getCoinoneItem(null, coinName));
+            upDateListView(false, getCoinoneItem(null, coinName));
         }
     }
 
@@ -226,7 +231,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                     }
                 }
                 isConnection.isBithumb = true;
-                upDateListView(_selectCoinName, getBithumbItem(item, _selectCoinName));
+                upDateListView(true, getBithumbItem(item, _selectCoinName));
             }
                     break;
             case IDENTIFIER_BITHUMB_COIN : {
@@ -234,7 +239,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                 Log.d("lee", res);
                 ResponseBithumbPrice info = _gson.fromJson(res, ResponseBithumbPrice.class);
                 isConnection.isBithumb = true;
-                upDateListView(_selectCoinName, getBithumbItem(info.data, _selectCoinName));
+                upDateListView(false, getBithumbItem(info.data, _selectCoinName));
 //                }
             }
                 break;
@@ -255,7 +260,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                     }
                 }
                 isConnection.isCoinOne = true;
-                upDateListView(_selectCoinName, getCoinoneItem(item, _selectCoinName));
+                upDateListView(true, getCoinoneItem(item, _selectCoinName));
             }
                     break;
 //                }else if(identifier.equals(IDENTIFIER_COINONE_COIN)){
@@ -263,7 +268,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                 Log.d("lee", res);
                 CoinoneItem item = _gson.fromJson(res, CoinoneItem.class);
                 isConnection.isCoinOne = true;
-                upDateListView(_selectCoinName, getCoinoneItem(item, _selectCoinName));
+                upDateListView(false, getCoinoneItem(item, _selectCoinName));
 //                }
             }
                 break;
@@ -275,9 +280,9 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                     isConnection.isUpBit = true;
                     if(array != null && array.size() > 0){
                         UpbitItem item = array.get(0);
-                        upDateListView(_selectCoinName, getUpbitItem(item, _selectCoinName));
+                        upDateListView(false, getUpbitItem(item, _selectCoinName));
                     }else{
-                        upDateListView(_selectCoinName, getUpbitItem(null, _selectCoinName));
+                        upDateListView(false, getUpbitItem(null, _selectCoinName));
                     }
                     Log.d("lee", array.toString());
                 }
@@ -298,7 +303,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                     }
                 }
                 isConnection.isPoloniex = true;
-                upDateListView(_selectCoinName, getPoloniexItem(selectedItem, _selectCoinName));
+                upDateListView(true, getPoloniexItem(selectedItem, _selectCoinName));
             }
                 break;
 
@@ -349,7 +354,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                 return getCoinPriceItem(Common.EXCHANGE.POLONIEX, key, item.last, NOT_DATA);
             }else{
                 item.isKRW = true;
-                return getCoinPriceItem(Common.EXCHANGE.POLONIEX, key, item.last*_krw, 0);
+                return getCoinPriceItem(Common.EXCHANGE.POLONIEX, key, item.last*_krw, NOT_DATA);
             }
 
         }else {
@@ -395,24 +400,25 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
 
     }
 
-    void upDateListView(final String coinName, ExchangeCoinPrice item){
+    void upDateListView(boolean isAllLoad, ExchangeCoinPrice item){
         _mapPrice.put(item.exchangeName, item);
         if(isConnection.isComplate()){
             isConnection.setDefault();
             _arrayPrice.clear();
 
+            ExchangeCoinPrice ec = _mapPrice.get(Common.EXCHANGE.POLONIEX);
+            double poloniexPrice = ec.price;
             for(Common.EXCHANGE key: _mapPrice.keySet()) {
                 ExchangeCoinPrice info =_mapPrice.get(key);
-                if(key == Common.EXCHANGE.POLONIEX) {
-                    info.setKRW(_krw);
-                    info.setPremium(NOT_DATA);
-                }else{
-//                    info.setPremium();
+                if(key != Common.EXCHANGE.POLONIEX) {
+                    info.setPremium(poloniexPrice);
                 }
-//                    _arrayPrice.add();
+                _arrayPrice.add(info);
             }
 
-
+            if(isAllLoad)
+                makeCoinNameList();
+            reflushListView();
         }
     }
 
@@ -425,6 +431,10 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                         _adapterPrice.notifyDataSetChanged();
                     }
                 });
+    }
+
+    public ArrayList<CoinNameData> getCoinNames(){
+        return _arrayCoinNames;
     }
 
     class PriceAdapter extends BaseAdapter{
@@ -459,7 +469,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
                 holder = new ViewHolder();
                 holder.exchange = view.findViewById(R.id.text_item_exchange_name);
                 holder.price = view.findViewById(R.id.text_item_price);
-                holder.averge = view.findViewById(R.id.text_item_avg);
+//                holder.averge = view.findViewById(R.id.text_item_avg);
                 holder.premium = view.findViewById(R.id.text_item_premium);
                 view.setTag(holder);
 
@@ -473,8 +483,11 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
 
             String strPremium = String.format("%.2f", item.premium);
 
-            holder.premium.setText(item.premium == NOT_DATA?"-":strPremium+"%");
-            holder.averge.setText(item.average_price == NOT_DATA ? "-":Common.toNumFormat(item.average_price));
+            if(item.exchangeName == Common.EXCHANGE.POLONIEX)
+                holder.premium.setText("-");
+            else
+                holder.premium.setText(item.premium == NOT_DATA?"-":strPremium+"%");
+//            holder.averge.setText(item.average_price == NOT_DATA ? "-":Common.toNumFormat(item.average_price));
 
             return view;
         }
@@ -486,7 +499,7 @@ public class PriceFragment extends Fragment implements ConnectionListener, Adapt
         class ViewHolder{
             public TextView exchange;
             public TextView price;
-            public TextView averge;
+//            public TextView averge;
             public TextView premium;
         }
     }
